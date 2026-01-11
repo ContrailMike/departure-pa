@@ -119,33 +119,3 @@ update();
 </body>
 </html>
 
-📄 Bestand 2 – manifest.json
-
-Maak een tweede bestand: manifest.json
-
-Plak dit erin:
-
-{
-  "name": "Departure PA",
-  "short_name": "Departure PA",
-  "start_url": "index.html",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff"
-}
-
-📄 Bestand 3 – service-worker.js
-
-Maak een derde bestand: service-worker.js
-
-self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open("departure-pa").then(cache =>
-      cache.addAll([
-        "./",
-        "./index.html",
-        "./manifest.json"
-      ])
-    )
-  );
-});
