@@ -1,0 +1,8 @@
+{
+  "name": "Departure PA",
+  "short_name": "Departure PA",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff"
+}

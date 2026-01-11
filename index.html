@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Departure PA</title>
+
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 20px;
+      background: #ffffff;
+      color: #000;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .section {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 4px;
+    }
+
+    .pa-text {
+      margin-top: 30px;
+      font-size: 18px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Departure PA</h1>
+
+  <div class="section">
+    <label>Greeting</label>
+    <select id="greeting">
+      <option>morning</option>
+      <option>afternoon</option>
+      <option>evening</option>
+    </select>
+
+    <label>First Officer</label>
+    <input id="fo" value="Pim Duifhuis">
+
+    <label>Flight Number</label>
+    <input id="flight">
+
+    <label>Destination</label>
+    <input id="destination">
+
+    <label>Captain</label>
+    <input id="captain">
+
+    <label>CSD</label>
+    <input id="csd">
+
+    <label>Flight Duration</label>
+    <input id="duration">
+
+    <label>Cruise Altitude (feet)</label>
+    <input id="altitude">
+  </div>
+
+  <div class="pa-text" id="pa"></div>
+
+<script>
+const fields = [
+  "greeting","fo","flight","destination",
+  "captain","csd","duration","altitude"
+];
+
+fields.forEach(id => {
+  const el = document.getElementById(id);
+  el.value = localStorage.getItem(id) || el.value;
+  el.addEventListener("input", update);
+});
+
+function update() {
+  fields.forEach(id => {
+    localStorage.setItem(id, document.getElementById(id).value);
+  });
+
+  const g = greeting.value;
+  pa.innerText =
+`Good ${g} ladies and gentlemen, from the flight deck.
+
+This is your First Officer speaking. My name is ${fo.value}. On behalf of Qatar Airways and all the crew, I would like to welcome you on board this Boeing 777, flight QR ${flight.value} to ${destination.value}.
+
+Beside me here in the flight deck is captain ${captain.value}, and looking after your safety and comfort in the cabin today are CSD ${csd.value} and our fantastic cabin crew.
+
+Our flight time today is ${duration.value} and we will be cruising at an altitude of ${altitude.value} feet.
+
+We are expecting generally good weather en route, however we may experience some light turbulence during the flight. So for your safety, please keep your seatbelts fastened at all times, even when the seatbelt signs are switched off.
+
+Before we begin our descent into ${destination.value} I will update you with the latest weather and arrival information.
+For now, I wish you a very pleasant journey on board this Qatar Airways flight.`;
+}
+
+update();
+</script>
+</body>
+</html>
+
+📄 Bestand 2 – manifest.json
+
+Maak een tweede bestand: manifest.json
+
+Plak dit erin:
+
+{
+  "name": "Departure PA",
+  "short_name": "Departure PA",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff"
+}
+
+📄 Bestand 3 – service-worker.js
+
+Maak een derde bestand: service-worker.js
+
+self.addEventListener("install", event => {
+  event.waitUntil(
+    caches.open("departure-pa").then(cache =>
+      cache.addAll([
+        "./",
+        "./index.html",
+        "./manifest.json"
+      ])
+    )
+  );
+});
