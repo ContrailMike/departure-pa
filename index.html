@@ -62,7 +62,9 @@
 <div class="tabs">
   <button onclick="show('departure')">Departure</button>
   <button onclick="show('arrival')">Arrival</button>
+  <button onclick="resetAll()">Reset</button>
 </div>
+
 
 <!-- COMMON FIELDS -->
 <div class="section">
@@ -172,6 +174,17 @@ The local time in ${destination.value} now is ${time.value}.
 Thank you for flying with us today. On behalf of all the crew, we wish you a very pleasant stay or a smooth onward journey.`;
 }
 
+  function resetAll() {
+  if (!confirm("Clear all fields?")) return;
+
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.value = "";
+      localStorage.removeItem(id);
+    }
+  });
+    
 update();
 </script>
 </body>
