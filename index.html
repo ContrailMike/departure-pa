@@ -3,25 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Departure PA</title>
+  <title>PA Tool</title>
 
   <link rel="manifest" href="manifest.json">
 
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
       margin: 20px;
       background: #ffffff;
       color: #000;
     }
 
     h1 {
-      font-size: 28px;
+      font-size: 26px;
       margin-bottom: 10px;
     }
 
+    .tabs button {
+      padding: 10px 14px;
+      margin-right: 6px;
+      font-size: 16px;
+    }
+
     .section {
-      margin-bottom: 20px;
+      margin-top: 20px;
     }
 
     label {
@@ -43,64 +49,105 @@
       line-height: 1.5;
       white-space: pre-wrap;
     }
+
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 
 <body>
-  <h1>Departure PA</h1>
+<h1>Passenger Announcements</h1>
 
-  <div class="section">
-    <label>Greeting</label>
-    <select id="greeting">
-      <option>morning</option>
-      <option>afternoon</option>
-      <option>evening</option>
-    </select>
+<div class="tabs">
+  <button onclick="show('departure')">Departure</button>
+  <button onclick="show('arrival')">Arrival</button>
+</div>
 
-    <label>First Officer</label>
-    <input id="fo" value="Pim Duifhuis">
+<!-- COMMON FIELDS -->
+<div class="section">
+  <label>Greeting</label>
+  <select id="greeting">
+    <option>morning</option>
+    <option>afternoon</option>
+    <option>evening</option>
+  </select>
 
-    <label>Flight Number</label>
-    <input id="flight">
+  <label>Destination</label>
+  <input id="destination">
+</div>
 
-    <label>Destination</label>
-    <input id="destination">
+<!-- DEPARTURE -->
+<div id="departure" class="section">
+  <label>First Officer</label>
+  <input id="fo" value="Pim Duifhuis">
 
-    <label>Captain</label>
-    <input id="captain">
+  <label>Flight Number</label>
+  <input id="flight">
 
-    <label>CSD</label>
-    <input id="csd">
+  <label>Captain</label>
+  <input id="captain">
 
-    <label>Flight Duration</label>
-    <input id="duration">
+  <label>CSD</label>
+  <input id="csd">
 
-    <label>Cruise Altitude (feet)</label>
-    <input id="altitude">
-  </div>
+  <label>Flight Duration</label>
+  <input id="duration">
 
-  <div class="pa-text" id="pa"></div>
+  <label>Cruise Altitude (feet)</label>
+  <input id="altitude">
+
+  <div class="pa-text" id="departurePA"></div>
+</div>
+
+<!-- ARRIVAL -->
+<div id="arrival" class="section hidden">
+  <label>Airspace</label>
+  <input id="airspace">
+
+  <label>Minutes to landing</label>
+  <input id="minutes">
+
+  <label>Weather condition on ground</label>
+  <input id="condition">
+
+  <label>Temperature (°C)</label>
+  <input id="temperature">
+
+  <label>Local time</label>
+  <input id="time">
+
+  <div class="pa-text" id="arrivalPA"></div>
+</div>
 
 <script>
 const fields = [
-  "greeting","fo","flight","destination",
-  "captain","csd","duration","altitude"
+  "greeting","destination","fo","flight","captain","csd",
+  "duration","altitude","airspace","minutes",
+  "condition","temperature","time"
 ];
 
 fields.forEach(id => {
   const el = document.getElementById(id);
+  if (!el) return;
   el.value = localStorage.getItem(id) || el.value;
   el.addEventListener("input", update);
 });
 
+function show(tab) {
+  document.getElementById("departure").classList.add("hidden");
+  document.getElementById("arrival").classList.add("hidden");
+  document.getElementById(tab).classList.remove("hidden");
+}
+
 function update() {
   fields.forEach(id => {
-    localStorage.setItem(id, document.getElementById(id).value);
+    const el = document.getElementById(id);
+    if (el) localStorage.setItem(id, el.value);
   });
 
-  const g = greeting.value;
-  pa.innerText =
-`Good ${g} ladies and gentlemen, from the flight deck.
+  departurePA.innerText =
+`Good ${greeting.value} ladies and gentlemen, from the flight deck.
 
 This is your First Officer speaking. My name is ${fo.value}. On behalf of Qatar Airways and all the crew, I would like to welcome you on board this Boeing 777, flight QR ${flight.value} to ${destination.value}.
 
@@ -112,10 +159,22 @@ We are expecting generally good weather en route, however we may experience some
 
 Before we begin our descent into ${destination.value} I will update you with the latest weather and arrival information.
 For now, I wish you a very pleasant journey on board this Qatar Airways flight.`;
+
+  arrivalPA.innerText =
+`Good ${greeting.value} ladies and gentlemen, from the flightdeck, this is your First Officer speaking.
+
+We are approaching ${airspace.value} airspace and we will be starting our descent into ${destination.value} shortly. We should be landing in about ${minutes.value} minutes.
+
+We have just received the latest weather information. It’s a ${condition.value} day with a temperature of ${temperature.value} degrees Celsius.
+
+The local time in ${destination.value} now is ${time.value}.
+
+Thank you for flying with us today. On behalf of all the crew, we wish you a very pleasant stay or a smooth onward journey.`;
 }
 
 update();
 </script>
 </body>
 </html>
+
 
